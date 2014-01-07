@@ -44,7 +44,7 @@ void
 runcmd(struct cmd *cmd)
 {
   int p[2], r;
-  int rv;
+  int rv, pid;
   struct execcmd *ecmd;
   struct pipecmd *pcmd;
   struct redircmd *rcmd;
@@ -88,8 +88,29 @@ runcmd(struct cmd *cmd)
 
   case '|':
     pcmd = (struct pipecmd*)cmd;
-    fprintf(stderr, "pipe not implemented\n");
-    // Your code here ...
+    if (pipe(p) < 0) {
+      perror("Series of tubes error");
+      exit(0);
+    }
+    pid = fork();
+    if (pid < 0) {
+      perror("fork failed");
+      exit(0);
+    } else if (pid == 0) {
+      if (close(1) < 0)
+	perror("Can't close stdout");
+      if (dup(p[1]) < 0)
+	perror("Can't dup pipe input");
+      runcmd(pcmd->left);
+    }
+    wait(&r);
+    if (close(p[1]) < 0)
+      perror("Can't close pipe input");
+    if (close(0) < 0)
+      perror("Can't close stdin");
+    if (dup(p[0]) < 0)
+      perror("Can't dup pipe output");
+    runcmd(pcmd->right);
     break;
   }    
   exit(0);
