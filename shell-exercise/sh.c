@@ -44,6 +44,7 @@ void
 runcmd(struct cmd *cmd)
 {
   int p[2], r;
+  int rv;
   struct execcmd *ecmd;
   struct pipecmd *pcmd;
   struct redircmd *rcmd;
@@ -68,9 +69,21 @@ runcmd(struct cmd *cmd)
   case '>':
   case '<':
     rcmd = (struct redircmd*)cmd;
-    fprintf(stderr, "redir not implemented\n");
-    // Your code here ...
+    if (close(rcmd->fd) < 0) {
+      perror("Failed to close existing file descriptor");
+      exit(0);
+    }
+    rv = open(rcmd->file, rcmd->mode, S_IRWXU);
+    if (rv < 0) {
+      perror("Can't redirect");
+      exit(0);
+    } else if (rv != rcmd->fd) {
+      fprintf(stderr, "Unexpected file descriptor.  Race condition?\n");
+      exit(0);
+    }
     runcmd(rcmd->cmd);
+    if (close(rcmd->fd) < 0)
+      perror("Failed to close file descriptor.");
     break;
 
   case '|':
