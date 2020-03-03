@@ -92,3 +92,28 @@ syscall(void)
     curproc->tf->eax = -1;
   }
 }
+
+
+## for part two. add function to the system call.
+I look around all the library in the xv6 package. we should add something on these files:
+syscall.c
+  this file is responsible for all the syscall and execute it in other file.
+
+user.h
+  this file is responsible for all the system call for user mode.
+
+halt.c
+  create, execute it when you type halt in the shell.
+
+sysproc.c
+  this file is responsible for the system call process. because halt is to terminate process. we need to implement it in 
+  this file'
+
+by the way, I think the proc.c and proc.h is responsible for the basic operatons in the operating system, like
+schedule, sleep, exit, fork, some instructions like that.
+
+
+syscall.h
+  define sys_halt to some identical number.
+ 
+  
