@@ -4,9 +4,9 @@ Note:
 kernel bss segment: a memory used to store the uninitialized parameter.
 end: point to the end of the used kernel memory.
 
-Part 1:
-boot_alloc
-'''
+##Part 1:
+###boot_alloc
+
 static void *
 boot_alloc(uint32_t n)
 {
@@ -42,4 +42,4 @@ boot_alloc(uint32_t n)
 	}
 	return NULL;
 }
-'''
+
